@@ -1,4 +1,7 @@
 function print(obj,varargin)
+  % The text to print after the prefix is the
+  % only optional argument.
+
   if nargin == 2
     obj.text = varargin{1}; 
   end

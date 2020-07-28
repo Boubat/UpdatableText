@@ -4,21 +4,51 @@ classdef UpdatableText < handle
 % message = UpdatableText(prefix,suffix)
 %
 % Use the print(text) method to update the text printed in the command window.
-% Handy if you can't or don't want to use the waitbar() function. 
 % Prefix, text, and suffix are concatenated and used in a fprintf() call
 % so format them to be fprintf() compliant.
 % 
 % Example:
 %
-%    maxIteration = 1000;
-%    prefix = 'progression: (';
-%    suffix = ['/' num2str(maxIteration) ')'];
-%    progression = UpdatableText(prefix,suffix);
+%   maxIteration = 1000;
+%   prefix = 'Elapsed time: ';
+%   suffix = ' milliseconds.';
+%   elapsedTime = UpdatableText(prefix,suffix);
+%   for i = 1:maxIteration
+%     elapsedTime.print(num2str(i));
+%     pause(0.001);
+%   end
 %
-%    for i = 1:maxIteration
-%      progression.print(num2str(i));
-%      pause(0.1);
-%    end
+% A percentage value and/or a progress bar can be added with a provided
+% fraction number.
+% 
+% Example:
+%
+%   maxIteration = 1000;
+%   prefix = 'Elapsed milliseconds: ';
+%   elapsedTime = UpdatableText(prefix);
+%   for i = 1:maxIteration
+%     elapsedTime.print(num2str(i));
+%     elapsedTime.printPercent(i/maxIteration);
+%     elapsedTime.printProgressBar(i/maxIteration);
+%     pause(0.001);
+%   end
+%
+% Text can be printed above the updated text.
+% 
+% Example:
+%
+%   maxIteration = 1000;
+%   prefix = 'Elapsed milliseconds: ';
+%   elapsedTime = UpdatableText(prefix);
+%   for i = 1:maxIteration
+%     elapsedTime.print(num2str(i));
+%     elapsedTime.printPercent(i/maxIteration);
+%     elapsedTime.printProgressBar(i/maxIteration);
+%     if not(mod(i,100))
+%       elapsedTime.printAbove(sprintf('%d milliseconds elapsed',i));
+%     end
+%     pause(0.001);
+%   end
 %
 % Beware not to print anything else in the command window while
 % an UpdatabaleText is being used since updating an UpdatableText
