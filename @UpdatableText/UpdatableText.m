@@ -26,22 +26,36 @@ classdef UpdatableText < handle
 
   properties (Access = private)
     lastPrintLength = 0;
+
     prefix = '';
-    suffix = '';
+    text = '';
+    percent = '';
+    progressBar = '';
+    suffix = '\n';
   end
 
-  methods 
+
+
+  methods (Access = public)
 
     function obj = UpdatableText(varargin)
       if nargin >= 1
         assert(ischar(varargin{1}),'The first argument must be a char array to set the prefix.');
-        obj.prefix = (varargin{1});
+        obj.prefix = varargin{1};
       end
       if nargin >= 2
         assert(ischar(varargin{2}),'The second argument must be a char array to set the suffix.');
-        obj.suffix = (varargin{2});
+        obj.suffix = [varargin{2} '\n'];
       end
     end
+
+  end
+
+
+
+  methods (Access = private)
+
+    formerTextDeleter = getFormerTextPrintableDeleter(obj);
 
   end
 
