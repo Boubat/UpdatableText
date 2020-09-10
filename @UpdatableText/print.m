@@ -1,18 +1,13 @@
 function print(obj,varargin)
-  % The text to print after the prefix is the
-  % only optional argument.
+  % Update and display the textToDisplay property.
+  % The only optional argument is a new value for the text property.
 
   if nargin == 2
-    obj.text = varargin{1}; 
+    obj.text = varargin{1};
   end
 
-  newPrintText = [obj.getFormerTextPrintableDeleter(),...
-    obj.prefix,... 
-    obj.text,... 
-    obj.percent,...
-    obj.progressBar,...
-    obj.suffix];
-  newPrintLength = fprintf(newPrintText);
+  obj.updateTextToDisplay();
+  newPrintLength = fprintf([obj.getFormerTextPrintableDeleter() obj.textToDisplay]);
 
   obj.lastPrintLength = newPrintLength - obj.lastPrintLength;
 end
