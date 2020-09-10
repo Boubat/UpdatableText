@@ -4,89 +4,82 @@ classdef UpdatableText < handle
 % message = UpdatableText(prefix,suffix)
 %
 % Use the print(text) method to update the text printed in the command window.
-% Prefix, text, and suffix are concatenated and used in a fprintf() call
-% so format them to be fprintf() compliant.
+%
+% The format string can contain three specific keywords:
+%   '_prefix' will be replaced by the value in the 'prefix' property.
+%   '_text' will be replaced by the value in the 'text' property.
+%   '_suffix' will be replaced by the value in the 'suffix' property.
+% The default format string is: '_prefix_text_suffix\n'
 % 
-% Example:
-%
-%   maxIteration = 1000;
-%   prefix = 'Elapsed time: ';
-%   suffix = ' milliseconds.';
-%   elapsedTime = UpdatableText(prefix,suffix);
-%   for i = 1:maxIteration
-%     elapsedTime.print(num2str(i));
-%     pause(0.001);
-%   end
-%
-% A percentage value and/or a progress bar can be added with a provided
-% fraction number.
-% 
-% Example:
-%
-%   maxIteration = 1000;
-%   prefix = 'Elapsed milliseconds: ';
-%   elapsedTime = UpdatableText(prefix);
-%   for i = 1:maxIteration
-%     elapsedTime.print(num2str(i));
-%     elapsedTime.printPercent(i/maxIteration);
-%     elapsedTime.printProgressBar(i/maxIteration);
-%     pause(0.001);
-%   end
-%
-% Text can be printed above the updated text.
-% 
-% Example:
-%
-%   maxIteration = 1000;
-%   prefix = 'Elapsed milliseconds: ';
-%   elapsedTime = UpdatableText(prefix);
-%   for i = 1:maxIteration
-%     elapsedTime.print(num2str(i));
-%     elapsedTime.printPercent(i/maxIteration);
-%     elapsedTime.printProgressBar(i/maxIteration);
-%     if not(mod(i,100))
-%       elapsedTime.printAbove(sprintf('%d milliseconds elapsed',i));
-%     end
-%     pause(0.001);
-%   end
-%
 % Beware not to print anything else in the command window while
 % an UpdatabaleText is being used since updating an UpdatableText
 % deletes characters among the last printed characters.
 
-  properties (Access = private)
+  properties (Access = protected)
     lastPrintLength = 0;
 
     prefix = '';
     text = '';
-    percent = '';
-    progressBar = '';
-    suffix = '\n';
+    suffix = '';
+
+    textToDisplay = '';
+    formatString = '';
+    formatFunctions = {};
   end
 
 
 
-  methods (Access = public)
+  methods
 
     function obj = UpdatableText(varargin)
       if nargin >= 1
-        assert(ischar(varargin{1}),'The first argument must be a char array to set the prefix.');
         obj.prefix = varargin{1};
       end
       if nargin >= 2
-        assert(ischar(varargin{2}),'The second argument must be a char array to set the suffix.');
-        obj.suffix = [varargin{2} '\n'];
+        obj.suffix = varargin{2};
       end
+      obj.setFormatFunctions(@(obj)obj.replaceInTextToDisplay('_prefix',obj.prefix),...
+        @(obj)obj.replaceInTextToDisplay('_text',obj.text),...
+        @(obj)obj.replaceInTextToDisplay('_suffix',obj.suffix));
+      obj.setFormatString('_prefix_text_suffix\n');
+    end
+
+    function set.prefix(obj,value)
+      assert(ischar(value),'Prefix must be a char array.');
+      obj.prefix = value;
+    end
+
+    function set.text(obj,value)
+      assert(ischar(value),'Text must be a char array.');
+      obj.text = value;
+    end
+
+    function set.suffix(obj,value)
+      assert(ischar(value),'Suffix must be a char array.');
+      obj.suffix = value;
+    end
+    
+    function set.formatString(obj,value)
+      assert(ischar(value),'Format string must be a char array.');
+      obj.formatString = value;
+    end
+
+    function set.formatFunctions(obj,value)
+      all(cellfun(@(argument)isa(argument,'function_handle'),value));
+      obj.formatFunctions = value;
     end
 
   end
 
 
-
-  methods (Access = private)
-
+  methods (Access = protected)
+    
+    updateTextToDisplay(obj);
     formerTextDeleter = getFormerTextPrintableDeleter(obj);
-
+    setFormatFunctions(obj,varargin);
+    replaceInTextToDisplay(obj,formatString,printedString);
+    
   end
-
+  
+  
 end
