@@ -4,6 +4,8 @@ classdef UpdatableText < handle
 % message = UpdatableText(prefix,suffix)
 %
 % Use the print(text) method to update the text printed in the command window.
+% Use the printAbove(text) method to print a non-updatable text above the 
+% current updatable text.
 %
 % The format string can contain three specific keywords:
 %   '_prefix' will be replaced by the value in the 'prefix' property.
